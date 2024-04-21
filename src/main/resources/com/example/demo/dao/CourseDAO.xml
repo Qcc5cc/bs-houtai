@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.CourseDAO">
+    <resultMap id="courseResultMap" type="com.example.demo.entity.Course">
+        <id column="id" property="id"/>
+        <result column="course_name" property="course_name"/>
+        <result column="teacher_id" property="teacher_id"/>
+        <result column="teacher" property="teacher"/>
+        <result column="school" property="school"/>
+        <result column="introduction" property="introduction"/>
+        <result column="imageBlob" property="imageBlob"/>
+    </resultMap>
+
+    <insert id="add" parameterType="com.example.demo.entity.Course">
+        insert into `course` (course_name, teacher_id,teacher,school,introduction,imageUrl)
+        values (#{course_name}, #{teacher_id},#{teacher},#{school},#{introduction},#{imageUrl})
+    </insert>
+
+    <delete id="delete" parameterType="com.example.demo.entity.Course">
+        update `course`
+        set is_deleted=1
+        where id = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.example.demo.entity.Course">
+        update `course`
+        set course_name=#{course_name},teacher=#{teacher},school=#{school},introduction=#{introduction},imageUrl=#{imageUrl}
+        where id = #{id}
+    </update>
+
+    <select id="getById" resultMap="courseResultMap">
+        select *
+        from `course`
+        where id = #{id} and is_deleted=0
+    </select>
+
+    <select id="getByCourseName" resultMap="courseResultMap">
+        select *
+        from `course`
+        where course_name = #{course_name} and is_deleted=0
+    </select>
+
+    <select id="getCourses" resultMap="courseResultMap">
+        select *
+        from `course`
+        where is_deleted=0
+    </select>
+
+    <select id="getOwnedCourses" resultMap="courseResultMap">
+        select *
+        from `course`
+        where teacher_id=#{teacherId} and is_deleted=0
+    </select>
+
+<!--    以下部分为对Course_student的操作-->
+    <insert id="stuAddCourse" parameterType="java.lang.Integer">
+        insert into `course_student` (student_id, course_id)
+        values (#{stuId}, #{courseId})
+    </insert>
+
+    <select id="search" resultMap="courseResultMap" >
+        select *
+        from `course_student`
+        where student_id = #{stuId} and course_id = #{courseId}
+    </select>
+
+<!--    以下部分为对Course_student + course的操作-->
+    <select id="getMyCourses" resultMap="courseResultMap" >
+        SELECT c.id, c.course_name, c.introduction,c.imageUrl,c.school,c.teacher
+        FROM course AS c, course_student AS s
+        WHERE s.student_id=#{stuId} and c.id = s.course_id and c.is_deleted =0 and s.is_deleted=0
+        group by c.id
+    </select>
+</mapper>

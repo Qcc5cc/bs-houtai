@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ChapterDAO">
+    <resultMap id="chapterResultMap" type="com.example.demo.entity.Chapter">
+        <id column="id" property="id"/>
+        <result column="course_id" property="course_id"/>
+        <result column="chapter_name" property="chapter_name"/>
+        <result column="resourceUrl" property="resourceUrl"/>
+    </resultMap>
+
+    <insert id="add" parameterType="com.example.demo.entity.Chapter">
+        insert into `chapter` (course_id, chapter_name,resourceUrl)
+        values (#{course_id}, #{chapter_name},#{resourceUrl})
+    </insert>
+
+    <select id="getCoursesByCourseId" resultMap="chapterResultMap">
+        select *
+        from `chapter`
+        where course_id = #{course_id} and is_deleted = 0
+    </select>
+
+    <select id="getById" resultMap="chapterResultMap">
+        select *
+        from `chapter`
+        where id = #{id}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        update `chapter`
+        set is_deleted=1
+        where id = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.example.demo.entity.Chapter">
+        update `chapter`
+        set chapter_name=#{chapter_name},resourceUrl=#{resourceUrl}
+        where id = #{id}
+    </update>
+</mapper>
